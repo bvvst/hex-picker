@@ -1,5 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
+  import { onMount } from "svelte";
+  import Refresh from "$lib/assets/refresh.svg";
 
   let rgb = [0, 0, 0];
 
@@ -29,21 +31,38 @@
 
   let userRgb = [0, 0, 0];
   let score = 0;
+
+  // check if color is light or dark
+  function isLight(color: number[]): boolean {
+    return color.reduce((a, b) => a + b) > 382.5;
+  }
+
+  let input: HTMLInputElement;
+
+  onMount(() => {
+    input.focus();
+  });
 </script>
 
-<div
-  class="flex w-screen h-screen"
-  style="background-color: rgb({rgb[0]}, {rgb[1]},{rgb[2]})"
->
-  <div class="m-auto flex flex-col items-center">
-    <span class="text-white">guess the color hex</span>
+<div class={clsx("text-white", "flex w-screen h-screen")}>
+  <div class="mx-auto flex flex-col items-center mt-10">
+    <span class="text-3xl font-semibold">What color is the puffle 🤔</span>
     <div
-      class="flex mt-4 w-44 relative border border-black/5 bg-black/5 items-center rounded gap-0.5 px-2 py-1 text-4xl"
+      class="w-40 h-40 mt-7 rounded-2xl"
+      style="background-color: rgb({rgb[0]}, {rgb[1]},{rgb[2]})"
     >
-      <span class="text-white/30">#</span>
+      <img class="pointer-events-none select-none" src="puffle.png" alt="" />
+    </div>
+    <div class="mt-4 relative text-3xl">
+      <div
+        class="pointer-events-none absolute mt-4 inset-y-0 left-0 flex items-center pl-6"
+      >
+        <span class="text-white/50 font-medium">#</span>
+      </div>
       <input
+        bind:this={input}
         placeholder="000000"
-        class="placeholder:text-white/30 bg-transparent outline-none w-full text-white"
+        class="outline-none w-80 rounded-2xl bg-white/10 pl-10 py-4 font-semibold placeholder:text-white/50 mt-4"
         type="text"
         on:input={(e) => {
           // @ts-ignore
@@ -83,6 +102,31 @@
         bind:value={userHex}
       />
     </div>
-    <span class="text-white mt-4">score: {score}</span>
+    <button
+      class="text-black w-80 h-14 border border-white/5 bg-white py-1.5 rounded-2xl mt-2 font-medium text-xl transition hover:bg-white/90 active:translate-y-1"
+      >Submit 🧠</button
+    >
+    <button
+      on:click={() => {
+        // populate rgb
+        rgb = rgb.map(() => getRandomValue());
+
+        // rgb to hex
+        trueHex = rgbToHex(rgb);
+        userHex = "";
+
+        // hex string to rgb
+        userRgb = [0, 0, 0];
+        score = 0;
+      }}
+      class="flex text-white/80 w-80 h-14 bg-white/10 py-1.5 rounded-2xl mt-2 text-xl transition hover:bg-white/15 active:translate-y-1"
+      ><img class="m-auto" src={Refresh} alt="" /></button
+    >
+    {#if score > 0}
+      <div class="flex flex-col items-center">
+        <span class="mt-16 font-semibold text-4xl"> {score}%</span>
+        <span class=" text-white/70 text-lg">accuracy</span>
+      </div>
+    {/if}
   </div>
 </div>
