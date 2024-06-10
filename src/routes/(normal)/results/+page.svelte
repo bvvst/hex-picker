@@ -8,6 +8,7 @@
   let accuracy = 0;
 
   let copied = false;
+  let loading = false;
 
   onMount(() => {
     // if there are no results, redirect to play
@@ -20,6 +21,7 @@
   });
 
   async function handleShare() {
+    loading = true;
     const colorArray: string[] = [];
     $results.forEach((result) => {
       colorArray.push(result.guessedHex, result.trueHex); // Add both guessed and true colors to the array
@@ -58,6 +60,7 @@
       // copy share page link to clipboard
       navigator.clipboard.writeText(`${window.location.origin}/share/${r.id}`);
 
+      loading = false;
       copied = true;
     } catch (error) {
       console.error("Error:", "error.message");
@@ -100,12 +103,17 @@
     <span class="text-white/80 max-w-sm text-center">Overall Accuracy</span>
     <button
       on:click={handleShare}
-      class="text-white w-80 h-14 border border-white/5 bg-white/10 py-1.5 rounded-2xl mt-6 font-medium text-xl transition hover:bg-white/15 active:translate-y-1"
+      class={clsx(
+        loading ? "bg-white/5" : "bg-white/10",
+        "text-white w-80 h-14 border border-white/5  py-1.5 rounded-2xl mt-6 font-medium text-xl transition hover:bg-white/15 active:translate-y-1"
+      )}
     >
-      {#if copied}
+      {#if loading}
+        Loading...
+      {:else if copied}
         Copied!
       {:else}
-        Share Results
+        Share
       {/if}
     </button>
     <button
