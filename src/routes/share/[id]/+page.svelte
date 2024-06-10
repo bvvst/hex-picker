@@ -1,8 +1,14 @@
 <script>
   import { env } from "$env/dynamic/public";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
 
   export let data;
-  console.log(data.id);
+
+  // route to main on mount
+  onMount(() => {
+    goto("/");
+  });
 </script>
 
 <svelte:head>
