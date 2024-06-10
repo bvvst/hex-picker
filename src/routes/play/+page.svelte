@@ -4,7 +4,7 @@
   import { results } from "$lib";
   import { goto } from "$app/navigation";
 
-  let timePerPuffle = 10;
+  let timePerPuffle = 15;
 
   let rgb = [0, 0, 0];
 
@@ -212,28 +212,6 @@
         bind:value={userHex}
       />
     </div>
-    <!-- <button
-      class="text-black w-80 h-14 border border-white/5 bg-white py-1.5 rounded-2xl mt-2 font-medium text-xl transition hover:bg-white/90 active:translate-y-1"
-      >Next ➡️</button
-    > -->
-    <!-- <button
-      on:click={() => {
-        // populate rgb
-        rgb = rgb.map(() => getRandomValue());
-
-        // rgb to hex
-        trueHex = rgbToHex(rgb);
-        userHex = "";
-
-        // hex string to rgb
-        userRgb = [0, 0, 0];
-        score = 0;
-      }}
-      class="flex items-center justify-center gap-1.5 w-80 h-14 bg-white/10 py-1.5 rounded-2xl mt-2 text-xl transition hover:bg-white/15 active:translate-y-1"
-    >
-      <span class="text-white">New</span>
-      🔄</button
-    > -->
     {#if score > 0}
       <div class="flex flex-col items-center">
         <span class="mt-16 font-semibold text-4xl"> {score}%</span>

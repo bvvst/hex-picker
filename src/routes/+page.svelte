@@ -9,7 +9,7 @@
       <img class="pointer-events-none select-none" src="puffle.png" alt="" />
     </div>
     <span class="text-white/80 mt-10 max-w-sm text-center"
-      >Go head to head with someone to guess five hex codes. You have 10 seconds
+      >Go head to head with someone to guess five hex codes. You have 15 seconds
       per puffle.</span
     >
     <a
