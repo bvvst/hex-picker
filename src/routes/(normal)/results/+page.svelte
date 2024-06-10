@@ -3,6 +3,7 @@
   import { results } from "$lib";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+  import { env } from "$env/dynamic/public";
 
   let accuracy = 0;
 
@@ -32,7 +33,7 @@
     };
 
     try {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL, {
+      const response = await fetch(env.PUBLIC_BACKEND_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
