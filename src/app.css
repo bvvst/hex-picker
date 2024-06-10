@@ -7,6 +7,10 @@
         @apply bg-black;
     }
 
+    mark {
+        @apply bg-transparent
+    }
+
     @font-face {
         font-family: 'Geist';
         font-weight: 400;
