@@ -1,10 +1,10 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { results } from "$lib";
   import { goto } from "$app/navigation";
 
-  let timePerPuffle = 15;
+  let timePerPuffle = 20;
 
   let rgb = [0, 0, 0];
 
@@ -65,6 +65,10 @@
         handleScore(userRgb);
       }
     }, 10);
+  });
+
+  onDestroy(() => {
+    clearInterval(intervalID);
   });
 
   function handleScore(input: number[]) {
