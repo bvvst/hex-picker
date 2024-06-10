@@ -14,6 +14,8 @@
   <meta name="twitter:title" content="Check out my hex color score!" />
   <meta name="twitter:description" content="Guess hex colors!" />
   <meta name="twitter:image" content="{env.PUBLIC_BACKEND_URL}/{data.id}" />
+  <meta name="twitter:image:src" content="{env.PUBLIC_BACKEND_URL}/{data.id}" />
+  <meta name="twitter:site" content="@bvvst" />
 </svelte:head>
 
 <h1>hi</h1>
