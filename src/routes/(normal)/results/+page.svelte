@@ -20,12 +20,18 @@
     accuracy = total / $results.length;
   });
 
+  let url = "";
+
   async function handleShare() {
+    if (url !== "") {
+      return;
+    }
     loading = true;
     const colorArray: string[] = [];
     $results.forEach((result) => {
       colorArray.push(result.guessedHex, result.trueHex); // Add both guessed and true colors to the array
     });
+
     // send results to backend
     const dataToSend = {
       userID: 0,
@@ -57,11 +63,20 @@
       const r: ResponseData = await response.json();
       console.log("Success:", r);
 
+      url = `${window.location.origin}/share/${r.id}`;
+
       // copy share page link to clipboard
-      navigator.clipboard.writeText(`${window.location.origin}/share/${r.id}`);
+      try {
+        await navigator.clipboard.writeText(
+          `${window.location.origin}/share/${r.id}`
+        );
+        copied = true;
+      } catch (clipError) {
+        console.error("Clipboard Error:", "clipError.message");
+        copied = false;
+      }
 
       loading = false;
-      copied = true;
     } catch (error) {
       console.error("Error:", "error.message");
     }
