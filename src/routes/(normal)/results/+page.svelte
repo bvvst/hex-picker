@@ -10,6 +10,10 @@
   let copied = false;
   let loading = false;
 
+  type ResponseData = {
+    id: string;
+  };
+
   onMount(() => {
     // if there are no results, redirect to play
     if ($results.length === 0) {
@@ -22,17 +26,21 @@
 
   let url = "";
 
-  async function handleShare() {
+  function handleShare() {
+    // set loading true
+    // build color array
+    // send results to get id
+    // copy url to clipboard
     if (url !== "") {
       return;
     }
+
     loading = true;
     const colorArray: string[] = [];
     $results.forEach((result) => {
       colorArray.push(result.guessedHex, result.trueHex); // Add both guessed and true colors to the array
     });
 
-    // send results to backend
     const dataToSend = {
       userID: 0,
       accuracy: accuracy,
@@ -40,46 +48,26 @@
       data: colorArray.slice(0, 10),
     };
 
-    try {
-      const response = await fetch(env.PUBLIC_BACKEND_URL, {
+    const text = new ClipboardItem({
+      "text/plain": fetch(env.PUBLIC_BACKEND_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
-      });
+      })
+        .then((response) => response.json())
+        .then((r: ResponseData) => {
+          url = `${env.PUBLIC_BACKEND_URL}/share/${r.id}`;
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `HTTP error! status: ${response.status}, ${errorData.message}`
-        );
-      }
+          return new Blob([url], { type: "text/plain" });
+        }),
+    });
 
-      type ResponseData = {
-        id: string;
-      };
+    navigator.clipboard.write([text]);
 
-      const r: ResponseData = await response.json();
-      console.log("Success:", r);
-
-      url = `${window.location.origin}/share/${r.id}`;
-
-      // copy share page link to clipboard
-      try {
-        await navigator.clipboard.writeText(
-          `${window.location.origin}/share/${r.id}`
-        );
-        copied = true;
-      } catch (clipError) {
-        console.error("Clipboard Error:", "clipError.message");
-        copied = false;
-      }
-
-      loading = false;
-    } catch (error) {
-      console.error("Error:", "error.message");
-    }
+    copied = true;
+    loading = false;
   }
 </script>
 
@@ -119,8 +107,10 @@
     <button
       on:click={handleShare}
       class={clsx(
-        loading ? "bg-white/5" : "bg-white/10",
-        "text-white w-80 h-14 border border-white/5  py-1.5 rounded-2xl mt-6 font-medium text-xl transition hover:bg-white/15 active:translate-y-1"
+        copied && "bg-white/20",
+        loading && "bg-white/5",
+        !copied && !loading && "bg-white/10 hover:bg-white/15",
+        "text-white w-80 h-14 border border-white/5  py-1.5 rounded-2xl mt-6 font-medium text-xl transition  active:translate-y-1"
       )}
     >
       {#if loading}
