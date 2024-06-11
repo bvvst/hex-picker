@@ -32,6 +32,8 @@
     // send results to get id
     // copy url to clipboard
     if (url !== "") {
+      navigator.clipboard.writeText(url);
+
       return;
     }
 
@@ -58,7 +60,7 @@
       })
         .then((response) => response.json())
         .then((r: ResponseData) => {
-          url = `${env.PUBLIC_BACKEND_URL}/share/${r.id}`;
+          url = `${window.location.origin}/share/${r.id}`;
 
           return new Blob([url], { type: "text/plain" });
         }),
