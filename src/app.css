@@ -36,3 +36,17 @@
         src: url(fonts/Geist-Bold.woff2) format('woff2');
       }
 }
+
+.slider {
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  @apply bg-white/20 outline-none h-3 w-full appearance-none rounded
+}
+
+.slider::-webkit-slider-thumb {
+  @apply rounded-sm cursor-pointer h-4 w-3 appearance-none bg-white
+}
+
+.slider::-moz-range-thumb {
+  @apply rounded-sm cursor-pointer h-4 w-4 appearance-none bg-white
+}

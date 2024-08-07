@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from "svelte";
   import { results } from "$lib";
   import { goto } from "$app/navigation";
+  import SliderNew from "$lib/SliderNew.svelte";
 
   let timePerPuffle = 20;
 
@@ -15,19 +16,17 @@
   // populate rgb
   rgb = rgb.map(() => getRandomValue());
 
-  let userHex = "";
-
-  // hex string to rgb
-  function hexToRgb(hex: string): number[] {
-    return [
-      parseInt(hex.slice(0, 2), 16),
-      parseInt(hex.slice(2, 4), 16),
-      parseInt(hex.slice(4, 6), 16),
-    ];
-  }
-
   let userRgb = [0, 0, 0];
-  let score = 0;
+
+  let input: HTMLInputElement;
+
+  let timeStart = Date.now();
+
+  let intervalID: number;
+
+  onDestroy(() => {
+    clearInterval(intervalID);
+  });
 
   // rgb to hex
   function rgbToHex(rgb: number[]): string {
@@ -39,38 +38,6 @@
       .join("");
   }
 
-  let input: HTMLInputElement;
-
-  let timeStart = Date.now();
-
-  let intervalID: number;
-
-  onMount(() => {
-    input.focus();
-
-    document.addEventListener("keydown", (event: KeyboardEvent) => {
-      if (event.key === "Enter") {
-        handleScore(userRgb);
-      }
-    });
-
-    timeStart = Date.now();
-
-    // update every second
-    intervalID = setInterval(() => {
-      secondsLeft = timePerPuffle - Math.round((Date.now() - timeStart) / 1000);
-
-      if (secondsLeft <= 0) {
-        clearInterval(intervalID);
-        handleScore(userRgb);
-      }
-    }, 10);
-  });
-
-  onDestroy(() => {
-    clearInterval(intervalID);
-  });
-
   function handleScore(input: number[]) {
     // calculate the difference between the true rgb and user rgb
     const diff = input.map((v, i) => Math.abs(v - rgb[i]));
@@ -81,15 +48,11 @@
     // calculate the score
     let rawscore = 100 - (totalDifference / 255 / 3) * 100;
 
-    // round the score
-    score = Math.round(rawscore);
-
-    // add the score to the results
     results.update((r) => {
       r.push({
         guessedHex: rgbToHex(input),
         trueHex: rgbToHex(rgb),
-        accuracy: score,
+        accuracy: Math.round(rawscore),
       });
       return r;
     });
@@ -123,12 +86,8 @@
     // populate rgb
     rgb = rgb.map(() => getRandomValue());
 
-    // clear input
-    userHex = "";
-
     // hex string to rgb
     userRgb = [0, 0, 0];
-    score = 0;
   }
 
   let secondsLeft = timePerPuffle;
@@ -192,35 +151,24 @@
     >
       <img class="pointer-events-none select-none" src="puffle.png" alt="" />
     </div>
-    <div class="mt-4 relative text-3xl">
-      <div
-        class="pointer-events-none absolute mt-4 inset-y-0 left-0 flex items-center pl-6"
-      >
-        <span class="text-white/70 font-medium">#</span>
+    <div class="mt-6 relative text-xl font-semibold w-80 gap-2 flex flex-col">
+      <div class="flex gap-4 items-center">
+        <span class="mt-0.5">R</span>
+        <SliderNew bind:val={userRgb[0]} />
       </div>
-      <input
-        bind:this={input}
-        placeholder="000000"
-        class="outline-none w-80 rounded-2xl bg-white/15 pl-10 py-4 font-semibold placeholder:text-white/50 mt-4"
-        type="text"
-        on:input={(e) => {
-          // @ts-ignore
-          if (e.target.value.length === 6) {
-            // @ts-ignore
-            console.log("value", e.target.value);
-            // @ts-ignore
-            userRgb = hexToRgb(e.target.value);
-            handleScore(userRgb);
-          }
-        }}
-        bind:value={userHex}
-      />
+      <div class="flex gap-4 items-center">
+        <span class="mt-0.5">G</span>
+        <SliderNew bind:val={userRgb[1]} />
+      </div>
+      <div class="flex gap-4 items-center">
+        <span class="mt-0.5">B</span>
+        <SliderNew bind:val={userRgb[2]} />
+      </div>
     </div>
-    {#if score > 0}
-      <div class="flex flex-col items-center">
-        <span class="mt-16 font-semibold text-4xl"> {score}%</span>
-        <span class=" text-white/70 text-lg">accuracy</span>
-      </div>
-    {/if}
+    <button
+      on:click={() => handleScore(userRgb)}
+      class="text-black flex items-center justify-center w-80 h-14 bg-white py-1.5 rounded-2xl mt-6 font-medium text-xl transition hover:bg-white/90 active:translate-y-1"
+      >Submit</button
+    >
   </div>
 </div>
